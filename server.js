@@ -27,7 +27,7 @@ app.use(cors());
 
 // For storing data in db
 app.post("/register", function (req, res) {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   bcrypt.genSalt(saltRounds, function (err, salt) {
     bcrypt.hash(req.body.password, salt, function (err, hash) {
       let test2 = "INSERT INTO gokul SET ?";
@@ -36,7 +36,7 @@ app.post("/register", function (req, res) {
         email: req.body.email,
         password: hash,
       };
-      connection.query(test2, post, function (req, res, err) {
+      connection.query(test2, post, function (res, err) {
         if (err) throw err;
         console.log(res);
       });
@@ -47,7 +47,7 @@ app.post("/register", function (req, res) {
 
 //  verifying data
 app.post("/login", function (req, res) {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   let e1 = req.body.email;
   let pass1 = req.body.password;
   let sql = "SELECT email,password FROM gokul";
@@ -72,6 +72,38 @@ app.post("/login", function (req, res) {
   });
 });
 
+//Storing table send in db
+app.post("/tablesend", function (req, res) {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+  let sql = "INSERT INTO tbl_send SET ?";
+  let post = {
+    Address: req.body.Address,
+    BirthPlace: req.body.BirthPlace,
+    College: req.body.College,
+    Email: req.body.Email,
+    Fullname: req.body.Fullname,
+    Mobile: req.body.Mobile,
+    Occupation: req.body.Occupation,
+    Rollnumber: req.body.Rollnumber,
+  };
+  connection.query(sql, post, function (res, err) {
+    if (err) throw err;
+  });
+  res.status(200).json({ data: res.data, message: "Setted Successfully" });
+});
+
+// table show api
+app.post("/tableshow", function (req, res) {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+  let sql = "SELECT Fullname,BirthPlace,Mobile from tbl_send";
+  connection.query(sql, async function (error, response) {
+    if (error) throw error;
+    let table = await response;
+    res.status(200).json({ message: "Got data", datas: table });
+  });
+});
+
+//  running server port assign
 app.listen(3001, () => {
   console.log("Server runnign in the 3001 port");
 });
